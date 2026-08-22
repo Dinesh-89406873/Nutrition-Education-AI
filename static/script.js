@@ -1,0 +1,5 @@
+const form=document.getElementById("chatForm"),input=document.getElementById("message"),box=document.getElementById("chatBox"),send=document.getElementById("send");
+function addMessage(text,type){const e=document.createElement("div");e.className="message "+type;e.textContent=text;box.appendChild(e);box.scrollTop=box.scrollHeight;return e}
+function quick(text){input.value=text;input.focus()}
+form.addEventListener("submit",async e=>{e.preventDefault();const text=input.value.trim();if(!text)return;document.querySelector(".welcome")?.remove();addMessage(text,"user");input.value="";send.disabled=true;const loading=addMessage("🤖 Thinking...","ai");try{const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:text})});const d=await r.json();loading.remove();addMessage(d.reply||d.error||"No response received.","ai")}catch(x){loading.remove();addMessage("❌ Server connection error.","ai")}send.disabled=false});
+input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();form.requestSubmit()}});
